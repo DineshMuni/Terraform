@@ -45,6 +45,7 @@ variable "vpc_id" {
 # Environment
 variable "env" {
   type = string
+ default = "Dev"
 }
 
 # Type
