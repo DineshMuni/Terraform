@@ -129,3 +129,214 @@ resource "aws_security_group" "eks_security_group" {
     Type = var.type
   }
 }
+
+# Creating IAM role for Master Node
+resource "aws_iam_role" "master" {
+  name = "EKS-Master"
+
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "eks.amazonaws.com"
+        },
+        "Action" : "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.master.name
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "AmazonEKSServicePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  role       = aws_iam_role.master.name
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "AmazonEKSVPCResourceController" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
+  role       = aws_iam_role.master.name
+}
+
+# Creating IAM role for Worker Node
+resource "aws_iam_role" "worker" {
+  name = "ed-eks-worker"
+
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "ec2.amazonaws.com"
+        },
+        "Action" : "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# Creating IAM Policy for auto-scaler
+resource "aws_iam_policy" "autoscaler" {
+  name = "ed-eks-autoscaler-policy"
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Action" : [
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeTags",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup",
+          "ec2:DescribeLaunchTemplateVersions"
+        ],
+        "Effect" : "Allow",
+        "Resource" : "*"
+      }
+    ]
+  })
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+  role       = aws_iam_role.worker.name
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = aws_iam_role.worker.name
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "AmazonSSMManagedInstanceCore" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.worker.name
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.worker.name
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "x-ray" {
+  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+  role       = aws_iam_role.worker.name
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "s3" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+  role       = aws_iam_role.worker.name
+}
+
+# Attaching Policy to IAM role
+resource "aws_iam_role_policy_attachment" "autoscaler" {
+  policy_arn = aws_iam_policy.autoscaler.arn
+  role       = aws_iam_role.worker.name
+}
+
+resource "aws_iam_instance_profile" "worker" {
+  depends_on = [aws_iam_role.worker]
+  name       = "EKS-worker-node-profile"
+  role       = aws_iam_role.worker.name
+}
+# Creating EKS Cluster
+resource "aws_eks_cluster" "eks" {
+  name     = "AWS-EKS"
+  role_arn = var.master_arn
+
+  vpc_config {
+    subnet_ids = [var.public_subnet_az1_id, var.public_subnet_az2_id]
+  }
+
+  tags = {
+    key   = var.env
+    value = var.type
+  }
+}
+
+# Using Data Source to get all Avalablility Zones in Region
+data "aws_availability_zones" "available_zones" {}
+
+# Fetching Ubuntu 20.04 AMI ID
+data "aws_ami" "amazon_linux_2" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"]
+}
+
+# Creating kubectl server
+resource "aws_instance" "kubectl-server" {
+  ami                         = data.aws_ami.amazon_linux_2.id
+  key_name                    = var.key_name
+  instance_type               = var.instance_size
+  associate_public_ip_address = true
+  subnet_id                   = var.public_subnet_az1_id
+  vpc_security_group_ids      = [var.eks_security_group_id]
+
+  tags = {
+    Name = "${var.cluster_name}-kubectl"
+    Env  = var.env
+    Type = var.type
+  }
+}
+
+# Creating Worker Node Group
+resource "aws_eks_node_group" "node-grp" {
+  cluster_name    = aws_eks_cluster.eks.name
+  node_group_name = "Worker-Node-Group"
+  node_role_arn   = var.worker_arn
+  subnet_ids      = [var.public_subnet_az1_id, var.public_subnet_az2_id]
+  capacity_type   = "ON_DEMAND"
+  disk_size       = 20
+  instance_types  = [var.instance_size]
+
+  remote_access {
+    ec2_ssh_key               = var.key_name
+    source_security_group_ids = [var.eks_security_group_id]
+  }
+
+  labels = {
+    env = "Prod"
+  }
+
+  scaling_config {
+    desired_size = var.worker_node_count
+    max_size     = var.worker_node_count
+    min_size     = var.worker_node_count
+  }
+
+  update_config {
+    max_unavailable = 1
+  }
+}
+
+
+
+
+
+
