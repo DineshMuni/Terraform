@@ -1,5 +1,5 @@
 provider "aws" {
-  region                   = "eu-east-2"
+  region                   = "${AWS_REGION}"
   shared_credentials_files = ["/home/ec2-user/.aws/credentials"]
 }
 # Creating VPC
