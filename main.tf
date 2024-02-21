@@ -1,12 +1,4 @@
 #Provider 
-terraform {
-      required_providers {
-         aws = {
-         source = "hashicorp/aws"
-         version = "= 3.74.2"
-        }
-     }
-  }
 provider "aws" {
   region                   = "${var.aws_region}" # Example region, replace with your desired region
   shared_credentials_files = ["/home/ec2-user/.aws/credentials"]
