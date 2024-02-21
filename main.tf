@@ -1,7 +1,4 @@
-provider "aws" {
-  region                   = "${aws_region}" # Example region, replace with your desired region
-  shared_credentials_files = ["/home/ec2-user/.aws/credentials"]
-}
+
 # Creating VPC
 
 resource "aws_vpc" "eks_vpc" {
