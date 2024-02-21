@@ -1,5 +1,5 @@
 # REGION
-variable "AWS_REGION" {
+variable "aws_region" {
   type = string
   default = "us-east-2"
 }
