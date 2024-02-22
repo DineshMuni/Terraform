@@ -1,8 +1,7 @@
 #Provider 
 provider "aws" {
   region                   = "${var.aws_region}" # Example region, replace with your desired region
-  skip_metadata_api_check = true
-  #shared_credentials_files = ["/home/ec2-user/.aws/credentials"]
+    #shared_credentials_files = ["/home/ec2-user/.aws/credentials"]
 }
 
 # Creating VPC
