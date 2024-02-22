@@ -1,7 +1,9 @@
 #Provider 
 provider "aws" {
   region                   = "${var.aws_region}" # Example region, replace with your desired region
-  shared_credentials_files = ["/Terraform/credentials"]
+  access_key = "AKIAW7D5RFHHLGWWAH5V"
+  secret_key = "rACU76W62orXYuHvhrxHfcvLufu8jAghFges9rOx"
+  #shared_credentials_files = ["/Terraform/credentials"]
 }
 
 # Creating VPC
