@@ -12,11 +12,13 @@ variable "env" {
 # Type
 variable "type" {
   type = string
+  default = "Dev"
 }
 
 # Stack name
 variable "cluster_name" {
   type = string
+  default = "EKS"
 }
 
 # SSH Access
