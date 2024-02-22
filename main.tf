@@ -90,7 +90,14 @@ resource "aws_route_table_association" "public_subnet_az2_route_table_associatio
   route_table_id = aws_route_table.public_route_table.id
 }
 
+# calling secuirty group from module 
 
+module "secuirty_group" {
+  source = "./modules/SG"
+  vpc_id = aws_vpc.eks_vpc.id
+}
+     
+      
 
 
 
