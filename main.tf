@@ -1,9 +1,9 @@
 #Provider 
 provider "aws" {
   region                   = "${var.aws_region}" # Example region, replace with your desired region
-  profile = "default"
   #access_key = "AKIAW7D5RFHHLGWWAH5V"
   #secret_key = "rACU76W62orXYuHvhrxHfcvLufu8jAghFges9rOx"
+  AWS_SHARED_CREDENTIALS_FILE = '/home/ec2-user/.aws/credentials'
   #shared_credentials_files = ["/Terraform/credentials"]
 }
 
