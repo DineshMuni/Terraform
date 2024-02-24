@@ -102,6 +102,13 @@ module "secuirty_group" {
 module "IAM_Role" {
   source = "./modules/IAM Role"
   }
+# create EKS Cluster 
+module "EKS" {
+  source = "./modules/EKS"
+  public_subnet_az1_id = aws_subnet.public_subnet_az1.id
+  public_subnet_az2_id = aws_subnet.public_subnet_az2.id
+}
+
 
       
 
