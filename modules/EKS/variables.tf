@@ -9,12 +9,14 @@ variable "env" {
 variable "type" {
   type = string
   description = "Type"
+  default = "backend"
 }
 
 # Stack name
 variable "cluster_name" {
   type = string
   description = "Project Name"
+  default = "EKS"
 }
 
 # Public subnet AZ1
