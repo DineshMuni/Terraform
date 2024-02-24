@@ -102,10 +102,6 @@ module "secuirty_group" {
 module "IAM_Role" {
   source = "./modules/IAM Role"
   }
-
-resource "example_resource" "worker_ARN" {
-  example_property = module.module_a.example_output
-}
 # create EKS Cluster 
 module "EKS" {
   source = "./modules/EKS"
