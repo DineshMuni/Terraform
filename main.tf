@@ -96,7 +96,13 @@ module "secuirty_group" {
   source = "./modules/SG"
   vpc_id = aws_vpc.eks_vpc.id
 }
-     
+
+# calling IAM Role
+
+module "IAM_Role" {
+  source = "./modules/IAM Role"
+  }
+
       
 
 
