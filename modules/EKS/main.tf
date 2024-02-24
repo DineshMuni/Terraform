@@ -1,3 +1,7 @@
+# calling IAM Role
+module "IAM_Role" {
+  source = "./modules/IAM Role"
+  }
 # Creating EKS Cluster
 resource "aws_eks_cluster" "eks" {
   name     = "AWS-EKS"
