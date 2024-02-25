@@ -41,3 +41,6 @@ resource "aws_security_group" "eks_security_group" {
     Type = var.type
   }
 }
+output "EKS_SG" {
+    value = aws_security_group.eks_security_group.id
+}
