@@ -103,12 +103,12 @@ module "secuirty_group" {
 
 module "IAM_Role" {
   source = "./modules/IAM Role"
-  output "master_arn" {
+}
+output "master_arn" {
     value = aws_iam_role.master.arn
-  }
-  output "worker_arn" {
+}
+output "worker_arn" {
     value = aws_iam_role.worker.arn
-  }
 }
 # create EKS Cluster 
 module "EKS" {
