@@ -8,7 +8,7 @@ resource "aws_iam_role" "master" {
       {
         "Effect" : "Allow",
         "Principal" : {
-          "Service" : "eks.amazonaws.com"
+          "AWS": "arn:aws:iam::479152122318:user/DineshSai"
         },
         "Action" : "sts:AssumeRole"
       }
@@ -44,7 +44,7 @@ resource "aws_iam_role" "worker" {
       {
         "Effect" : "Allow",
         "Principal" : {
-          "Service" : "ec2.amazonaws.com"
+          "AWS": "arn:aws:iam::479152122318:user/DineshSai"
         },
         "Action" : "sts:AssumeRole"
       }
