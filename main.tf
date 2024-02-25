@@ -117,6 +117,7 @@ module "EKS" {
   public_subnet_az2_id = aws_subnet.public_subnet_az2.id
   master_arn = module.IAM_Role.master_arn
   worker_arn = module.IAM_Role.worker_arn
+  
 }
 
 
