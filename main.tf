@@ -96,11 +96,7 @@ module "secuirty_group" {
   source = "./modules/SG"
   vpc_id = aws_vpc.eks_vpc.id
 }
-output "EKS_SG" {
-    value = aws_security_group.eks_security_group.id
-}
 # calling IAM Role
-
 module "IAM_Role" {
   source = "./modules/IAM Role"
 }
