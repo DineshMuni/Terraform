@@ -53,16 +53,19 @@ variable "worker_arn" {
 variable "key_name" {
   type = string
   description = "Name of SSH key"
+  default = "Terraform"
 }
 
 # Worker Node & Kubectl instance size
 variable "instance_size" {
   type = string
   description = "Worker node's instance size"
+  default = "t2.micro"
 }
 
 # node count
 variable "worker_node_count" {
   type = string
   description = "Worker node's count"
+  default = "2"
 }
