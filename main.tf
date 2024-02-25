@@ -101,12 +101,20 @@ module "secuirty_group" {
 
 module "IAM_Role" {
   source = "./modules/IAM Role"
+  output "master_arn" {
+    value = aws_iam_role.master.arn
   }
+  output "worker_arn" {
+    value = aws_iam_role.worker.arn
+  }
+}
 # create EKS Cluster 
 module "EKS" {
   source = "./modules/EKS"
   public_subnet_az1_id = aws_subnet.public_subnet_az1.id
   public_subnet_az2_id = aws_subnet.public_subnet_az2.id
+  master_arn = module.IAM_Role.master_arn
+  worker_arn = module.IAM_Role.worker_arn
 }
 
 
