@@ -44,7 +44,7 @@ resource "aws_iam_role" "worker" {
       {
         "Effect" : "Allow",
         "Principal" : {
-          "Service" : "eks.amazonaws.com","ec2.amazonaws.com"
+          "Service" : ["eks.amazonaws.com","ec2.amazonaws.com"]
         },
         "Action" : "sts:AssumeRole"
       }
